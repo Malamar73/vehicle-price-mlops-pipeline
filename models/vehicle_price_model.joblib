@@ -1,0 +1,36 @@
+
+from pathlib import Path
+
+import joblib
+import pandas as pd
+from sklearn.ensemble import RandomForestRegressor
+
+# Step 1: Load training data
+df = pd.read_csv("data/vehicle_sales.csv")
+
+# Step 2: Separate features and target
+X = df[["year", "mileage", "condition"]]
+y = df["price"]
+
+# Step 3: Convert categorical data into numbers
+X = pd.get_dummies(X, columns=["condition"])
+
+# Step 4: Train the model
+model = RandomForestRegressor(
+    n_estimators=100,
+    random_state=42
+)
+model.fit(X, y)
+
+# Step 5: Save the model and feature names
+Path("models").mkdir(exist_ok=True)
+
+joblib.dump(
+    {
+        "model": model,
+        "features": X.columns.tolist()
+    },
+    "models/vehicle_price_model.joblib"
+)
+
+print("Model trained and saved successfully!")
